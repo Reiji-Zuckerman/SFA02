@@ -610,6 +610,66 @@ body {
   margin-bottom: 4px;
 }
 
+/* === Dashboard === */
+.dashboard-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1b2a4a;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--color-primary);
+}
+
+.dashboard-section-title i {
+  margin-right: 6px;
+  color: var(--color-primary);
+}
+
+/* Pipeline funnel */
+.pipeline-funnel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pipeline-stage {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pipeline-bar {
+  background: linear-gradient(90deg, var(--color-primary), #4da3e8);
+  border-radius: 4px;
+  padding: 6px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 60px;
+  transition: width 0.3s ease;
+}
+
+.pipeline-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.pipeline-count {
+  font-size: 11px;
+  color: rgba(255,255,255,0.85);
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+.pipeline-amount {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  white-space: nowrap;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .sidebar {
