@@ -47,7 +47,25 @@ const API_HANDLERS = {
     return company;
   },
 
-  createCompany: (params) => insertRow('Company', params.data),
+  createCompany: (params) => {
+    const company = insertRow('Company', params.data);
+    // CompanyMember 中間テーブル自動作成
+    if (params.data.members_data && Array.isArray(params.data.members_data)) {
+      params.data.members_data.forEach(md => {
+        insertRow('CompanyMember', {
+          company_id: company.id,
+          member_id: md.member_id,
+          role_in_company: md.role_in_company || '',
+        });
+      });
+    }
+    // Contract レコード自動作成（初回）
+    const existingContracts = getRowsWhere('Contract', { company_id: company.id });
+    if (existingContracts.length === 0) {
+      insertRow('Contract', { company_id: company.id });
+    }
+    return company;
+  },
   updateCompany: (params) => updateRowById('Company', params.id, params.data),
 
   // ===== 部署 =====
@@ -109,8 +127,22 @@ const API_HANDLERS = {
   createMeeting: (params) => {
     // 商談回数の自動採番
     const existing = getRowsWhere('Meeting', { company_id: params.data.company_id });
-    params.data.meeting_count = existing.length + 1;
-    return insertRow('Meeting', params.data);
+    const data = { ...params.data };
+    const memberIds = data.member_ids || [];
+    const contactIds = data.contact_ids || [];
+    delete data.member_ids;
+    delete data.contact_ids;
+    data.meeting_count = existing.length + 1;
+    const meeting = insertRow('Meeting', data);
+    // MeetingMember 中間テーブル
+    memberIds.forEach(mid => {
+      insertRow('MeetingMember', { meeting_id: meeting.id, member_id: mid });
+    });
+    // MeetingContact 中間テーブル
+    contactIds.forEach(cid => {
+      insertRow('MeetingContact', { meeting_id: meeting.id, contact_id: cid });
+    });
+    return meeting;
   },
   updateMeeting: (params) => updateRowById('Meeting', params.id, params.data),
 
@@ -183,7 +215,19 @@ const API_HANDLERS = {
   },
 
   getJobsByCompany: (params) => getRowsWhere('Job', { company_id: params.companyId }),
-  createJob: (params) => insertRow('Job', params.data),
+  createJob: (params) => {
+    const data = { ...params.data };
+    const memberIds = data.member_ids || [];
+    const contactIds = data.contact_ids || [];
+    delete data.member_ids;
+    delete data.contact_ids;
+    const job = insertRow('Job', data);
+    // JobMember 中間テーブル
+    memberIds.forEach(mid => {
+      insertRow('JobMember', { job_id: job.id, member_id: mid });
+    });
+    return job;
+  },
 
   // ===== タスク =====
   getTaskList: (params) => {
@@ -226,9 +270,36 @@ const API_HANDLERS = {
   // ===== メンバー =====
   getMemberList: () => getAllRows('Member'),
 
+  // ===== 全データ取得（モーダル用） =====
+  getAllContacts: () => {
+    const contacts = getAllRows('Contact');
+    const companies = getAllRows('Company');
+    return contacts.map(c => {
+      const company = companies.find(co => co.id === c.company_id);
+      return { ...c, company_name: company ? company.name : '' };
+    });
+  },
+
+  getAllDepartments: () => getAllRows('Department'),
+
+  getAllContractLines: () => {
+    const contractLines = getAllRows('ContractLine');
+    const contracts = getAllRows('Contract');
+    const companies = getAllRows('Company');
+    return contractLines.map(cl => {
+      const contract = contracts.find(c => c.id === cl.contract_id);
+      const company = contract ? companies.find(co => co.id === contract.company_id) : null;
+      return {
+        ...cl,
+        company_id: contract ? contract.company_id : '',
+        company_name: company ? company.name : '',
+      };
+    });
+  },
+
   // ===== 全社サマリー =====
-  getDashboardData: (params) => {
-    // Phase 4で実装
-    return { message: 'Not implemented yet' };
+  getDashboardData: () => {
+    // ダッシュボードはフロントエンドで集計するため、全データを返す
+    return { message: 'Dashboard computed client-side' };
   },
 };

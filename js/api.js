@@ -4,8 +4,14 @@
  */
 
 const API = (() => {
-  // GAS Web App の公開URL（デプロイ後に設定）
-  const GAS_API_URL = '';
+  // GAS Web App の公開URL
+  // 1. URLパラメータ ?gas=<URL> で指定可能
+  // 2. localStorage に保存済みなら自動で使用
+  // 3. 空の場合はモックモードで動作
+  const urlParams = new URLSearchParams(window.location.search);
+  const gasFromUrl = urlParams.get('gas');
+  if (gasFromUrl) localStorage.setItem('SFA02_GAS_URL', gasFromUrl);
+  const GAS_API_URL = localStorage.getItem('SFA02_GAS_URL') || '';
 
   // モックモード（GAS未接続時はtrue）
   const USE_MOCK = !GAS_API_URL;
@@ -92,5 +98,17 @@ const API = (() => {
     getAllContacts: () => get('getAllContacts'),
     getAllDepartments: () => get('getAllDepartments'),
     getAllContractLines: () => get('getAllContractLines'),
+
+    // === 接続管理 ===
+    isUsingMock: () => USE_MOCK,
+    getGasUrl: () => GAS_API_URL,
+    setGasUrl: (url) => {
+      if (url) {
+        localStorage.setItem('SFA02_GAS_URL', url);
+      } else {
+        localStorage.removeItem('SFA02_GAS_URL');
+      }
+      location.reload();
+    },
   };
 })();
