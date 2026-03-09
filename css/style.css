@@ -472,6 +472,55 @@ body {
   color: var(--color-primary);
 }
 
+/* === Company Detail === */
+.company-header {
+  border-left: 4px solid var(--color-primary);
+}
+
+.company-header .contract-status-row {
+  gap: 12px;
+}
+
+.company-header .contract-status-item {
+  gap: 6px;
+}
+
+/* Tabs */
+.nav-tabs .nav-link {
+  color: var(--color-text-muted);
+  border: 1px solid transparent;
+  border-bottom: none;
+  font-weight: 500;
+  padding: 8px 16px;
+}
+
+.nav-tabs .nav-link:hover {
+  color: var(--color-primary);
+  border-color: transparent;
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--color-primary);
+  font-weight: 600;
+  background: #fff;
+  border-color: var(--color-border) var(--color-border) #fff;
+}
+
+/* Meeting timeline */
+.meeting-timeline .card {
+  border-left: 3px solid var(--color-primary);
+}
+
+.meeting-timeline .card:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+/* List group override */
+.list-group-item.active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .sidebar {
