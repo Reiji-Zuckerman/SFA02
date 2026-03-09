@@ -1,0 +1,218 @@
+erDiagram
+    Member {
+        UUID id PK
+        STRING name
+        STRING email
+        ENUM role
+        BOOLEAN is_active
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    Company {
+        UUID id PK
+        STRING name
+        STRING name_kana
+        ENUM industry
+        STRING tier "※求人DBよりJOINで参照・SFA側にカラムなし"
+        STRING website_url
+        STRING phone
+        STRING address
+        ENUM lead_source
+        UUID referred_by_contact_id FK
+        INTEGER sent_count_90days "※求人DBよりJOINで参照・SFA側にカラムなし"
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    CompanyMember {
+        UUID id PK
+        UUID company_id FK
+        UUID member_id FK
+        ENUM role_in_company
+    }
+
+    Contract {
+        UUID id PK
+        UUID company_id FK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    ContractLine {
+        UUID id PK
+        UUID contract_id FK
+        ENUM business_type
+        ENUM status
+        DATE contracted_date
+        ENUM lost_reason
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    Department {
+        UUID id PK
+        UUID company_id FK
+        STRING name
+        INTEGER sent_count_90days "※求人DBよりJOINで参照・SFA側にカラムなし"
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    Contact {
+        UUID id PK
+        UUID company_id FK
+        UUID department_id FK
+        STRING name
+        STRING name_kana
+        STRING title
+        ENUM influence_type
+        STRING email
+        STRING phone
+        BOOLEAN is_active
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    Meeting {
+        UUID id PK
+        UUID company_id FK
+        UUID project_id FK
+        UUID setter_member_id FK
+        DATE meeting_date
+        ENUM meeting_type
+        INTEGER meeting_count
+        TEXT summary
+        TEXT next_action
+        ENUM disqualified_reason
+        UUID parent_meeting_id FK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    MeetingMember {
+        UUID id PK
+        UUID meeting_id FK
+        UUID member_id FK
+    }
+
+    MeetingContact {
+        UUID id PK
+        UUID meeting_id FK
+        UUID contact_id FK
+    }
+
+    Project {
+        UUID id PK
+        UUID company_id FK
+        UUID department_id FK
+        UUID contractline_id FK
+        ENUM business_type
+        STRING name
+        ENUM status
+        UUID assigned_member_id FK
+        BOOLEAN is_active
+        INTEGER win_rate
+        INTEGER estimated_revenue
+        INTEGER contract_revenue
+        INTEGER estimated_gross_profit
+        ENUM lost_reason
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    ProjectStatusHistory {
+        UUID id PK
+        UUID project_id FK
+        ENUM status_from
+        ENUM status_to
+        TIMESTAMP changed_at
+        UUID changed_by_member_id FK
+    }
+
+    Job {
+        UUID id PK
+        UUID project_id FK
+        UUID company_id FK
+        UUID department_id FK
+        STRING job_title
+        ENUM business_type
+        DATE acquired_date
+        STRING sent_status "※求人DBよりJOINで参照・SFA側にカラムなし"
+        STRING job_active_status "※求人DBの稼働ステータスをJOINで参照・SFA側にカラムなし"
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    JobMember {
+        UUID id PK
+        UUID job_id FK
+        UUID member_id FK
+    }
+
+    JobContact {
+        UUID id PK
+        UUID job_id FK
+        UUID contact_id FK
+    }
+
+    Task {
+        UUID id PK
+        STRING title
+        TEXT description
+        DATE due_date
+        ENUM status
+        ENUM priority
+        ENUM action_type
+        UUID assigned_member_id FK
+        UUID company_id FK
+        UUID department_id FK
+        UUID project_id FK
+        UUID contract_id FK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    %% リレーション定義
+    Company ||--o{ CompanyMember : ""
+    Member ||--o{ CompanyMember : ""
+
+    Company ||--o| Contract : ""
+    Contract ||--o{ ContractLine : ""
+
+    Company ||--o{ Department : ""
+    Company ||--o{ Contact : ""
+    Department ||--o{ Contact : ""
+
+    Company ||--o{ Meeting : ""
+    Meeting }o--o| Project : ""
+    Meeting ||--o{ MeetingMember : ""
+    Meeting ||--o{ MeetingContact : ""
+    Member ||--o{ MeetingMember : ""
+    Contact ||--o{ MeetingContact : ""
+    Member ||--o{ Meeting : "setter"
+    Meeting }o--o| Meeting : "parent"
+
+    Company ||--o{ Project : ""
+    Department ||--o{ Project : ""
+    ContractLine ||--o{ Project : ""
+    Member ||--o{ Project : "assigned"
+
+    Project ||--o{ ProjectStatusHistory : ""
+    Member ||--o{ ProjectStatusHistory : ""
+
+    Project |o--o{ Job : ""
+    Company ||--o{ Job : ""
+    Department |o--o{ Job : ""
+    Job ||--o{ JobMember : ""
+    Job ||--o{ JobContact : ""
+    Member ||--o{ JobMember : ""
+    Contact ||--o{ JobContact : ""
+
+    Project ||--o{ Task : ""
+    Contract ||--o{ Task : ""
+    Company ||--o{ Task : ""
+    Department ||--o{ Task : ""
+    Member ||--o{ Task : "assigned"
+
+    Contact ||--o| Company : "referred_by"
