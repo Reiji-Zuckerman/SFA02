@@ -1,0 +1,492 @@
+/* SFA02 - カスタムCSS（Salesforce風レイアウト） */
+
+:root {
+  --sidebar-width: 220px;
+  --header-height: 50px;
+  --color-primary: #0176d3;
+  --color-primary-dark: #014486;
+  --color-success: #2e844a;
+  --color-warning: #fe9339;
+  --color-danger: #ea001e;
+  --color-info: #0070d2;
+  --color-bg: #f3f3f3;
+  --color-sidebar-bg: #1b2a4a;
+  --color-sidebar-hover: #243656;
+  --color-sidebar-active: #0176d3;
+  --color-text-muted: #706e6b;
+  --color-border: #e5e5e5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', 'Meiryo', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  font-size: 14px;
+  color: #333;
+}
+
+/* === Layout === */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--color-sidebar-bg);
+  color: #fff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.sidebar-logo {
+  padding: 16px 20px;
+  font-size: 18px;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  letter-spacing: 1px;
+}
+
+.sidebar-nav {
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+  flex: 1;
+}
+
+.sidebar-nav li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 20px;
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+  font-size: 13.5px;
+  transition: background 0.15s, color 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-nav li a:hover {
+  background: var(--color-sidebar-hover);
+  color: #fff;
+}
+
+.sidebar-nav li a.active {
+  background: var(--color-sidebar-hover);
+  color: #fff;
+  border-left-color: var(--color-sidebar-active);
+  font-weight: 600;
+}
+
+.sidebar-nav li a i {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+.sidebar-member {
+  padding: 12px 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  font-size: 12px;
+}
+
+.sidebar-member select {
+  width: 100%;
+  margin-top: 6px;
+  padding: 5px 8px;
+  border-radius: 4px;
+  border: none;
+  font-size: 12px;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+
+.sidebar-member select option {
+  color: #333;
+  background: #fff;
+}
+
+.main-content {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  padding: 20px 24px;
+  min-height: 100vh;
+}
+
+/* === Page Header === */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1b2a4a;
+}
+
+/* === Card === */
+.card {
+  border: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
+.card-header {
+  background: #fff;
+  border-bottom: 1px solid var(--color-border);
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* === Summary Cards (Task page KPIs) === */
+.summary-cards {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.summary-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 14px 18px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  min-width: 140px;
+  flex: 1;
+}
+
+.summary-card .label {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.summary-card .value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+.summary-card .sub {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* === Filter Bar === */
+.filter-bar {
+  background: #fff;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.filter-bar .filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filter-bar .filter-group label {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.filter-bar .filter-group select,
+.filter-bar .filter-group input {
+  padding: 5px 10px;
+  border: 1px solid #d8d8d8;
+  border-radius: 4px;
+  font-size: 13px;
+  min-width: 130px;
+}
+
+/* === Data Table === */
+.data-table {
+  width: 100%;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.data-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+}
+
+.data-table thead th {
+  background: #fafbfc;
+  border-bottom: 2px solid var(--color-border);
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid var(--color-border);
+  transition: background 0.1s;
+}
+
+.data-table tbody tr:hover {
+  background: #f0f7ff;
+}
+
+.data-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.data-table tbody td {
+  padding: 10px 12px;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.data-table tbody td a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.data-table tbody td a:hover {
+  text-decoration: underline;
+}
+
+/* === Badges / Tags === */
+.badge-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.badge-締結済 { background: #d4edda; color: #155724; }
+.badge-進行中 { background: #cce5ff; color: #004085; }
+.badge-初回商談 { background: #fff3cd; color: #856404; }
+.badge-リサイクル { background: #f8d7da; color: #721c24; }
+
+.badge-提案準備中 { background: #e2e3e5; color: #383d41; }
+.badge-提案中 { background: #cce5ff; color: #004085; }
+.badge-PoC { background: #d1ecf1; color: #0c5460; }
+.badge-本提案中 { background: #b8daff; color: #004085; }
+.badge-受注 { background: #d4edda; color: #155724; }
+.badge-失注 { background: #f8d7da; color: #721c24; }
+
+.badge-アプローチ中 { background: #fff3cd; color: #856404; }
+.badge-求人取得 { background: #d4edda; color: #155724; }
+.badge-停止 { background: #f8d7da; color: #721c24; }
+
+.badge-biz {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.badge-DSL { background: #6f42c1; color: #fff; }
+.badge-PERM { background: #fd7e14; color: #fff; }
+.badge-ITSS { background: #20c997; color: #fff; }
+
+.badge-priority {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.priority-高 { background: #f8d7da; color: #721c24; }
+.priority-中 { background: #fff3cd; color: #856404; }
+.priority-低 { background: #e2e3e5; color: #383d41; }
+
+.badge-valid { background: #d4edda; color: #155724; }
+.badge-invalid { background: #f8d7da; color: #721c24; }
+
+/* === Overdue highlight === */
+.row-overdue {
+  background: #fff5f5 !important;
+}
+
+.row-overdue td {
+  color: #c53030;
+}
+
+.text-overdue {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+/* === Checkbox (task complete) === */
+.task-check {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-success);
+}
+
+/* === Kanban (Project) === */
+.kanban-board {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.kanban-column {
+  min-width: 200px;
+  flex: 1;
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.kanban-column-header {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.kanban-card {
+  background: #fff;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  font-size: 13px;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+
+.kanban-card:hover {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.kanban-card .company-name {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+
+.kanban-card .project-name {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.kanban-card .amount {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+.kanban-card .win-rate {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+/* === View Toggle === */
+.view-toggle .btn {
+  font-size: 12px;
+  padding: 4px 12px;
+}
+
+/* === Empty state === */
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--color-text-muted);
+}
+
+/* === Misc === */
+.text-muted {
+  color: var(--color-text-muted) !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.contract-status-row {
+  display: flex;
+  gap: 8px;
+}
+
+.contract-status-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.no-data {
+  color: #999;
+  font-style: italic;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+}
+
+.spinner-border {
+  color: var(--color-primary);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 60px;
+  }
+  .sidebar-logo span,
+  .sidebar-nav li a span,
+  .sidebar-member {
+    display: none;
+  }
+  .sidebar-nav li a {
+    justify-content: center;
+    padding: 12px;
+  }
+  .main-content {
+    margin-left: 60px;
+  }
+}
