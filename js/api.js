@@ -87,5 +87,10 @@ const API = (() => {
 
     // 全社サマリー
     getDashboardData: (period) => get('getDashboardData', { period }),
+
+    // モーダル用：全データ取得
+    getAllContacts: () => get('getAllContacts'),
+    getAllDepartments: () => get('getAllDepartments'),
+    getAllContractLines: () => get('getAllContractLines'),
   };
 })();

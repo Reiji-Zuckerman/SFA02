@@ -8,10 +8,12 @@ const MeetingList = {
     <div>
       <div class="page-header">
         <h2><i class="bi bi-calendar-event"></i> 商談一覧</h2>
-        <button class="btn btn-primary btn-sm">
+        <button class="btn btn-primary btn-sm" @click="showModal = true">
           <i class="bi bi-plus-lg"></i> 商談追加
         </button>
       </div>
+
+      <meeting-modal :show="showModal" :members="members" :companies="companies" :contacts="contacts" :projects="projects" @close="showModal = false" @saved="onSaved"></meeting-modal>
 
       <!-- フィルター -->
       <div class="filter-bar">
@@ -102,7 +104,11 @@ const MeetingList = {
   data() {
     return {
       meetings: [],
+      companies: [],
+      contacts: [],
+      projects: [],
       loading: true,
+      showModal: false,
       meetingTypes: CONSTANTS.MEETING_TYPES,
       filters: {
         dateRange: 'thisMonth',
@@ -137,8 +143,21 @@ const MeetingList = {
   methods: {
     async loadData() {
       this.loading = true;
-      this.meetings = await API.getMeetingList();
+      const [meetings, companies, contacts, projects] = await Promise.all([
+        API.getMeetingList(),
+        API.getCompanyList(),
+        API.getAllContacts(),
+        API.getProjectList(),
+      ]);
+      this.meetings = meetings;
+      this.companies = companies;
+      this.contacts = contacts;
+      this.projects = projects;
       this.loading = false;
+    },
+    async onSaved() {
+      this.showModal = false;
+      await this.loadData();
     },
     formatDate(d) {
       return FilterUtils.formatDate(d);

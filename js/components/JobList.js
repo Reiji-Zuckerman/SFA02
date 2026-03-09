@@ -8,10 +8,12 @@ const JobList = {
     <div>
       <div class="page-header">
         <h2><i class="bi bi-person-badge"></i> 求人一覧</h2>
-        <button class="btn btn-primary btn-sm">
+        <button class="btn btn-primary btn-sm" @click="showModal = true">
           <i class="bi bi-plus-lg"></i> 求人追加
         </button>
       </div>
+
+      <job-modal :show="showModal" :members="members" :companies="companies" :contacts="contacts" :projects="projects" :departments="departments" @close="showModal = false" @saved="onSaved"></job-modal>
 
       <!-- フィルター -->
       <div class="filter-bar">
@@ -92,7 +94,12 @@ const JobList = {
   data() {
     return {
       jobs: [],
+      companies: [],
+      contacts: [],
+      projects: [],
+      departments: [],
       loading: true,
+      showModal: false,
       jobBusinessTypes: CONSTANTS.JOB_BUSINESS_TYPES,
       filters: {
         member: '',
@@ -132,8 +139,23 @@ const JobList = {
   methods: {
     async loadData() {
       this.loading = true;
-      this.jobs = await API.getJobList();
+      const [jobs, companies, contacts, projects, departments] = await Promise.all([
+        API.getJobList(),
+        API.getCompanyList(),
+        API.getAllContacts(),
+        API.getProjectList(),
+        API.getAllDepartments(),
+      ]);
+      this.jobs = jobs;
+      this.companies = companies;
+      this.contacts = contacts;
+      this.projects = projects;
+      this.departments = departments;
       this.loading = false;
+    },
+    async onSaved() {
+      this.showModal = false;
+      await this.loadData();
     },
     formatDate(d) {
       return FilterUtils.formatDate(d);

@@ -301,6 +301,139 @@ const MockData = (() => {
       case 'getTasksByCompany':
         return tasks.filter(t => t.company_id === params.companyId);
 
+      // === CREATE / UPDATE ハンドラー ===
+      case 'createCompany': {
+        const newCompany = { id: uuid(), ...params.data, created_at: new Date().toISOString() };
+        companies.push(newCompany);
+        // CompanyMember作成
+        if (params.data.company_members) {
+          params.data.company_members.forEach(cm => {
+            companyMembers.push({ id: uuid(), company_id: newCompany.id, member_id: cm.member_id, role_in_company: cm.role_in_company });
+          });
+        }
+        // Contract作成
+        contracts.push({ id: uuid(), company_id: newCompany.id });
+        return newCompany;
+      }
+      case 'updateCompany': {
+        const idx = companies.findIndex(c => c.id === params.id);
+        if (idx >= 0) Object.assign(companies[idx], params.data);
+        return { success: true };
+      }
+
+      case 'createDepartment': {
+        const newDept = { id: uuid(), ...params.data, created_at: new Date().toISOString() };
+        departments.push(newDept);
+        return newDept;
+      }
+
+      case 'createContact': {
+        const newContact = { id: uuid(), ...params.data, created_at: new Date().toISOString() };
+        contacts.push(newContact);
+        return newContact;
+      }
+      case 'updateContact': {
+        const idx = contacts.findIndex(c => c.id === params.id);
+        if (idx >= 0) Object.assign(contacts[idx], params.data);
+        return { success: true };
+      }
+
+      case 'createContractLine': {
+        // 企業のContractを探す or 作成
+        let contract = contracts.find(ct => ct.company_id === params.data.company_id);
+        if (!contract) {
+          contract = { id: uuid(), company_id: params.data.company_id };
+          contracts.push(contract);
+        }
+        const newCL = { id: uuid(), contract_id: contract.id, ...params.data, created_at: new Date().toISOString() };
+        delete newCL.company_id;
+        contractLines.push(newCL);
+        return newCL;
+      }
+      case 'updateContractLine': {
+        const idx = contractLines.findIndex(cl => cl.id === params.id);
+        if (idx >= 0) Object.assign(contractLines[idx], params.data);
+        return { success: true };
+      }
+
+      case 'createMeeting': {
+        // meeting_countを計算
+        const companyMeetings = meetings.filter(m => m.company_id === params.data.company_id);
+        const newMeeting = {
+          id: uuid(),
+          ...params.data,
+          meeting_count: companyMeetings.length + 1,
+          created_at: new Date().toISOString(),
+        };
+        meetings.push(newMeeting);
+        // MeetingMember作成
+        if (params.data.member_ids) {
+          params.data.member_ids.forEach(mid => {
+            meetingMembers.push({ id: uuid(), meeting_id: newMeeting.id, member_id: mid });
+          });
+        }
+        // MeetingContact作成
+        if (params.data.contact_ids) {
+          params.data.contact_ids.forEach(cid => {
+            meetingContacts.push({ id: uuid(), meeting_id: newMeeting.id, contact_id: cid });
+          });
+        }
+        return newMeeting;
+      }
+      case 'updateMeeting': {
+        const idx = meetings.findIndex(m => m.id === params.id);
+        if (idx >= 0) Object.assign(meetings[idx], params.data);
+        return { success: true };
+      }
+
+      case 'createProject': {
+        const newProject = { id: uuid(), ...params.data, created_at: new Date().toISOString() };
+        projects.push(newProject);
+        return newProject;
+      }
+      case 'updateProject': {
+        const idx = projects.findIndex(p => p.id === params.id);
+        if (idx >= 0) Object.assign(projects[idx], params.data);
+        return { success: true };
+      }
+
+      case 'createJob': {
+        const newJob = { id: uuid(), ...params.data, created_at: new Date().toISOString() };
+        jobs.push(newJob);
+        // JobMember作成
+        if (params.data.member_ids) {
+          params.data.member_ids.forEach(mid => {
+            jobMembers.push({ id: uuid(), job_id: newJob.id, member_id: mid });
+          });
+        }
+        return newJob;
+      }
+
+      case 'createTask': {
+        const newTask = { id: uuid(), ...params.data, created_at: new Date().toISOString() };
+        tasks.push(newTask);
+        return newTask;
+      }
+      case 'updateTask': {
+        const idx = tasks.findIndex(t => t.id === params.id);
+        if (idx >= 0) Object.assign(tasks[idx], params.data);
+        return { success: true };
+      }
+
+      // === 全データ取得（モーダル用） ===
+      case 'getAllContacts':
+        return contacts;
+
+      case 'getAllDepartments':
+        return departments;
+
+      case 'getAllContractLines':
+        return contractLines.map(cl => {
+          const contract = contracts.find(ct => ct.id === cl.contract_id);
+          const company = contract ? companies.find(c => c.id === contract.company_id) : null;
+          return { ...cl, company_id: contract ? contract.company_id : '', company_name: company ? company.name : '' };
+        });
+
       default:
         return { message: 'Mock: action not implemented: ' + action };
     }

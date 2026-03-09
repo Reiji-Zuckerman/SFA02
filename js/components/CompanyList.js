@@ -8,10 +8,12 @@ const CompanyList = {
     <div>
       <div class="page-header">
         <h2><i class="bi bi-building"></i> 企業一覧</h2>
-        <button class="btn btn-primary btn-sm">
+        <button class="btn btn-primary btn-sm" @click="showModal = true">
           <i class="bi bi-plus-lg"></i> 企業追加
         </button>
       </div>
+
+      <company-modal :show="showModal" :members="members" @close="showModal = false" @saved="onSaved"></company-modal>
 
       <!-- フィルター -->
       <div class="filter-bar">
@@ -109,6 +111,7 @@ const CompanyList = {
     return {
       companies: [],
       loading: true,
+      showModal: false,
       industries: CONSTANTS.INDUSTRIES,
       contractStatuses: CONSTANTS.CONTRACT_STATUSES,
       leadSources: CONSTANTS.LEAD_SOURCES,
@@ -158,6 +161,10 @@ const CompanyList = {
     },
     goDetail(id) {
       window.location.hash = '#/companies/' + id;
+    },
+    async onSaved() {
+      this.showModal = false;
+      await this.loadData();
     },
   },
   async mounted() {

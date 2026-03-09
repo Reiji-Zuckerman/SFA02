@@ -104,5 +104,15 @@ app.component('job-list', JobList);
 app.component('dashboard-view', Dashboard);
 app.component('member-list', MemberList);
 
+// モーダルコンポーネント
+app.component('company-modal', CompanyModal);
+app.component('department-modal', DepartmentModal);
+app.component('contact-modal', ContactModal);
+app.component('contractline-modal', ContractLineModal);
+app.component('meeting-modal', MeetingModal);
+app.component('project-modal', ProjectModal);
+app.component('job-modal', JobModal);
+app.component('task-modal', TaskModal);
+
 // アプリマウント
 app.mount('#app');

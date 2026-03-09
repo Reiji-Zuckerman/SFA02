@@ -8,10 +8,12 @@ const TaskList = {
     <div>
       <div class="page-header">
         <h2><i class="bi bi-check2-square"></i> タスク一覧</h2>
-        <button class="btn btn-primary btn-sm" @click="showAddModal = true">
+        <button class="btn btn-primary btn-sm" @click="showModal = true">
           <i class="bi bi-plus-lg"></i> タスク追加
         </button>
       </div>
+
+      <task-modal :show="showModal" :members="members" :companies="companies" :projects="projects" :contract-lines="contractLinesAll" :departments="departments" @close="showModal = false" @saved="onSaved"></task-modal>
 
       <!-- 月次個人サマリー -->
       <div class="summary-cards" v-if="currentMember">
@@ -132,8 +134,12 @@ const TaskList = {
   data() {
     return {
       tasks: [],
+      companies: [],
+      projects: [],
+      contractLinesAll: [],
+      departments: [],
       loading: true,
-      showAddModal: false,
+      showModal: false,
       priorities: CONSTANTS.PRIORITIES,
       filters: {
         assigned_member_id: 'mine',
@@ -227,8 +233,23 @@ const TaskList = {
   methods: {
     async loadData() {
       this.loading = true;
-      this.tasks = await API.getTaskList();
+      const [tasks, companies, projects, contractLines, departments] = await Promise.all([
+        API.getTaskList(),
+        API.getCompanyList(),
+        API.getProjectList(),
+        API.getAllContractLines(),
+        API.getAllDepartments(),
+      ]);
+      this.tasks = tasks;
+      this.companies = companies;
+      this.projects = projects;
+      this.contractLinesAll = contractLines;
+      this.departments = departments;
       this.loading = false;
+    },
+    async onSaved() {
+      this.showModal = false;
+      await this.loadData();
     },
     isOverdue(task) {
       return task.status !== '完了' && FilterUtils.isOverdue(task.due_date);

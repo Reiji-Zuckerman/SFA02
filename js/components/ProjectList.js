@@ -19,11 +19,13 @@ const ProjectList = {
               <i class="bi bi-kanban"></i> カンバン
             </button>
           </div>
-          <button class="btn btn-primary btn-sm">
+          <button class="btn btn-primary btn-sm" @click="showModal = true">
             <i class="bi bi-plus-lg"></i> 案件追加
           </button>
         </div>
       </div>
+
+      <project-modal :show="showModal" :members="members" :companies="companies" :departments="departments" :contract-lines="contractLinesAll" @close="showModal = false" @saved="onSaved"></project-modal>
 
       <!-- フィルター -->
       <div class="filter-bar">
@@ -134,7 +136,11 @@ const ProjectList = {
   data() {
     return {
       projects: [],
+      companies: [],
+      departments: [],
+      contractLinesAll: [],
       loading: true,
+      showModal: false,
       viewMode: 'list',
       businessTypes: CONSTANTS.BUSINESS_TYPES,
       dslStatuses: CONSTANTS.PROJECT_STATUSES.DSL,
@@ -188,8 +194,21 @@ const ProjectList = {
   methods: {
     async loadData() {
       this.loading = true;
-      this.projects = await API.getProjectList();
+      const [projects, companies, departments, contractLines] = await Promise.all([
+        API.getProjectList(),
+        API.getCompanyList(),
+        API.getAllDepartments(),
+        API.getAllContractLines(),
+      ]);
+      this.projects = projects;
+      this.companies = companies;
+      this.departments = departments;
+      this.contractLinesAll = contractLines;
       this.loading = false;
+    },
+    async onSaved() {
+      this.showModal = false;
+      await this.loadData();
     },
     formatCurrency(amount) {
       return FilterUtils.formatCurrency(amount);

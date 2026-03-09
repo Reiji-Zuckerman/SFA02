@@ -95,6 +95,7 @@ const CompanyDetail = {
             <div v-if="activeTab === 'contract'">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 style="font-size:15px; font-weight:600; margin:0;">契約状況</h5>
+                <button class="btn btn-primary btn-sm" @click="showContractModal = true"><i class="bi bi-plus"></i> 契約追加</button>
               </div>
               <div v-if="contractLines.length === 0" class="empty-state">契約情報がありません</div>
               <div class="data-table" v-else>
@@ -128,6 +129,7 @@ const CompanyDetail = {
                 <div class="col-md-4">
                   <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 style="font-size:15px; font-weight:600; margin:0;">部署</h5>
+                    <button class="btn btn-outline-primary btn-sm" @click="showDeptModal = true"><i class="bi bi-plus"></i></button>
                   </div>
                   <div v-if="departments.length === 0" class="empty-state" style="padding:20px">部署がありません</div>
                   <div class="list-group" v-else>
@@ -152,6 +154,7 @@ const CompanyDetail = {
                 <div class="col-md-8">
                   <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 style="font-size:15px; font-weight:600; margin:0;">担当者</h5>
+                    <button class="btn btn-primary btn-sm" @click="showContactModal = true"><i class="bi bi-plus"></i> 担当者追加</button>
                   </div>
                   <div v-if="filteredContacts.length === 0" class="empty-state" style="padding:20px">担当者がいません</div>
                   <div class="data-table" v-else>
@@ -198,6 +201,7 @@ const CompanyDetail = {
             <div v-if="activeTab === 'meetings'">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 style="font-size:15px; font-weight:600; margin:0;">商談履歴</h5>
+                <button class="btn btn-primary btn-sm" @click="showMeetingModal = true"><i class="bi bi-plus"></i> 商談追加</button>
               </div>
               <div v-if="meetings.length === 0" class="empty-state">商談がありません</div>
 
@@ -242,6 +246,7 @@ const CompanyDetail = {
             <div v-if="activeTab === 'projects'">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 style="font-size:15px; font-weight:600; margin:0;">案件</h5>
+                <button class="btn btn-primary btn-sm" @click="showProjectModal = true"><i class="bi bi-plus"></i> 案件追加</button>
               </div>
               <div v-if="projects.length === 0" class="empty-state">案件がありません</div>
               <div class="data-table" v-else>
@@ -285,6 +290,7 @@ const CompanyDetail = {
             <div v-if="activeTab === 'jobs'">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 style="font-size:15px; font-weight:600; margin:0;">求人</h5>
+                <button class="btn btn-primary btn-sm" @click="showJobModal = true"><i class="bi bi-plus"></i> 求人追加</button>
               </div>
               <div v-if="jobs.length === 0" class="empty-state">求人がありません</div>
               <div class="data-table" v-else>
@@ -317,11 +323,12 @@ const CompanyDetail = {
             <div v-if="activeTab === 'tasks'">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 style="font-size:15px; font-weight:600; margin:0;">タスク</h5>
-                <div>
+                <div class="d-flex gap-2 align-items-center">
                   <select v-model="taskFilter" class="form-select form-select-sm" style="font-size:12px; width:auto; display:inline-block">
                     <option value="未着手">未着手のみ</option>
                     <option value="">すべて</option>
                   </select>
+                  <button class="btn btn-primary btn-sm" @click="showTaskModal = true"><i class="bi bi-plus"></i> タスク追加</button>
                 </div>
               </div>
               <div v-if="filteredTasks.length === 0" class="empty-state">タスクがありません</div>
@@ -373,6 +380,16 @@ const CompanyDetail = {
 
           </div>
         </div>
+
+        <!-- モーダル群 -->
+        <contractline-modal :show="showContractModal" :company-id="companyId" :company-name="company.name" @close="showContractModal = false" @saved="onModalSaved"></contractline-modal>
+        <department-modal :show="showDeptModal" :company-id="companyId" :company-name="company.name" @close="showDeptModal = false" @saved="onModalSaved"></department-modal>
+        <contact-modal :show="showContactModal" :company-id="companyId" :company-name="company.name" :departments="departments" @close="showContactModal = false" @saved="onModalSaved" @dept-created="onModalSaved"></contact-modal>
+        <meeting-modal :show="showMeetingModal" :fixed-company-id="companyId" :members="members" :companies="allCompanies" :contacts="contacts" :projects="projects" @close="showMeetingModal = false" @saved="onModalSaved"></meeting-modal>
+        <project-modal :show="showProjectModal" :fixed-company-id="companyId" :members="members" :companies="allCompanies" :departments="departments" :contract-lines="contractLines" @close="showProjectModal = false" @saved="onModalSaved"></project-modal>
+        <job-modal :show="showJobModal" :fixed-company-id="companyId" :members="members" :companies="allCompanies" :contacts="contacts" :projects="projects" :departments="departments" @close="showJobModal = false" @saved="onModalSaved"></job-modal>
+        <task-modal :show="showTaskModal" :fixed-company-id="companyId" :members="members" :companies="allCompanies" :projects="projects" :contract-lines="contractLinesForTask" :departments="departments" @close="showTaskModal = false" @saved="onModalSaved"></task-modal>
+
       </div>
     </div>
   `,
@@ -387,6 +404,15 @@ const CompanyDetail = {
       selectedDeptId: null,
       taskFilter: '未着手',
 
+      // モーダル表示フラグ
+      showContractModal: false,
+      showDeptModal: false,
+      showContactModal: false,
+      showMeetingModal: false,
+      showProjectModal: false,
+      showJobModal: false,
+      showTaskModal: false,
+
       // 関連データ
       contractLines: [],
       departments: [],
@@ -396,6 +422,7 @@ const CompanyDetail = {
       jobs: [],
       tasks: [],
       companyMembers: [],
+      allCompanies: [],
     };
   },
 
@@ -409,6 +436,15 @@ const CompanyDetail = {
         { key: 'jobs', label: '求人', icon: 'person-badge', count: this.jobs.length },
         { key: 'tasks', label: 'タスク', icon: 'check2-square', count: this.tasks.filter(t => t.status === '未着手').length },
       ];
+    },
+
+    contractLinesForTask() {
+      // TaskModalに渡す用（company_name付き）
+      return this.contractLines.map(cl => ({
+        ...cl,
+        company_id: this.companyId,
+        company_name: this.company ? this.company.name : '',
+      }));
     },
 
     contractStatusMap() {
@@ -451,7 +487,7 @@ const CompanyDetail = {
       this.loading = true;
 
       // 全データを並列取得
-      const [company, contractData, departments, contacts, meetings, projects, jobs, tasks] = await Promise.all([
+      const [company, contractData, departments, contacts, meetings, projects, jobs, tasks, allCompanies] = await Promise.all([
         API.getCompanyById(this.companyId),
         API.getContractByCompany(this.companyId),
         API.getDepartmentsByCompany(this.companyId),
@@ -460,6 +496,7 @@ const CompanyDetail = {
         API.getProjectsByCompany(this.companyId),
         API.getJobsByCompany(this.companyId),
         API.getTasksByCompany(this.companyId),
+        API.getCompanyList(),
       ]);
 
       this.company = company;
@@ -471,8 +508,21 @@ const CompanyDetail = {
       this.jobs = await this.enrichJobs(jobs);
       this.tasks = await this.enrichTasks(tasks);
       this.companyMembers = this.getCompanyMemberList();
+      this.allCompanies = allCompanies;
 
       this.loading = false;
+    },
+
+    async onModalSaved() {
+      // 全モーダルを閉じてデータリロード
+      this.showContractModal = false;
+      this.showDeptModal = false;
+      this.showContactModal = false;
+      this.showMeetingModal = false;
+      this.showProjectModal = false;
+      this.showJobModal = false;
+      this.showTaskModal = false;
+      await this.loadData();
     },
 
     // メンバー情報を取得してcompanyMembers一覧を作成
