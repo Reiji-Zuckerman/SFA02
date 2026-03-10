@@ -200,7 +200,6 @@ const CompanyDetail = {
                   </div>
                 </div>
               </div>
-            </div>
 
               <!-- 部署別Sent数（求人DB参照・読み取り専用） -->
               <div class="mt-4" v-if="deptSentCounts.length > 0">
