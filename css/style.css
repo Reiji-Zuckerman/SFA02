@@ -336,6 +336,19 @@ body {
 .badge-valid { background: #d4edda; color: #155724; }
 .badge-invalid { background: #f8d7da; color: #721c24; }
 
+/* Tier badges（求人DB参照） */
+.badge-tier {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.tier-A { background: #d4edda; color: #155724; }
+.tier-B { background: #cce5ff; color: #004085; }
+.tier-C { background: #fff3cd; color: #856404; }
+.tier-D { background: #e2e3e5; color: #383d41; }
+
 /* === Overdue highlight === */
 .row-overdue {
   background: #fff5f5 !important;
@@ -668,6 +681,53 @@ body {
   font-weight: 600;
   color: var(--color-primary-dark);
   white-space: nowrap;
+}
+
+/* === Filter Save & Column Toggle Dropdowns === */
+.filter-save-dropdown,
+.column-toggle-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 200;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  min-width: 240px;
+  margin-top: 4px;
+}
+
+.filter-save-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.filter-save-item {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.filter-save-item:hover {
+  background: #f0f7ff;
+}
+
+.filter-save-add {
+  padding: 8px 12px;
+  border-top: 1px solid #eee;
+}
+
+.column-toggle-item {
+  padding: 4px 12px;
+}
+
+.column-toggle-item:hover {
+  background: #f0f7ff;
 }
 
 /* Responsive */

@@ -23,7 +23,8 @@ const app = Vue.createApp({
           :is="currentComponent"
           :current-member-id="currentMemberId"
           :members="members"
-          :company-id="routeParams.id">
+          :company-id="routeParams.id"
+          :project-id="routeParams.id">
         </component>
       </main>
     </div>
@@ -41,6 +42,7 @@ const app = Vue.createApp({
     currentComponent() {
       const path = this.currentRoute;
       if (path.startsWith('/companies/') && this.routeParams.id) return 'company-detail';
+      if (path.startsWith('/projects/') && this.routeParams.id) return 'project-detail';
       const routes = {
         '/tasks': 'task-list',
         '/companies': 'company-list',
@@ -61,6 +63,13 @@ const app = Vue.createApp({
       if (companyMatch) {
         this.currentRoute = '/companies/' + companyMatch[1];
         this.routeParams = { id: companyMatch[1] };
+        return;
+      }
+      // /projects/:id のようなパスをパース
+      const projectMatch = hash.match(/^\/projects\/(.+)$/);
+      if (projectMatch) {
+        this.currentRoute = '/projects/' + projectMatch[1];
+        this.routeParams = { id: projectMatch[1] };
         return;
       }
       this.currentRoute = hash;
@@ -100,9 +109,14 @@ app.component('company-list', CompanyList);
 app.component('company-detail', CompanyDetail);
 app.component('meeting-list', MeetingList);
 app.component('project-list', ProjectList);
+app.component('project-detail', ProjectDetail);
 app.component('job-list', JobList);
 app.component('dashboard-view', Dashboard);
 app.component('member-list', MemberList);
+
+// 共通コンポーネント
+app.component('filter-save', FilterSave);
+app.component('column-toggle', ColumnToggle);
 
 // モーダルコンポーネント
 app.component('company-modal', CompanyModal);

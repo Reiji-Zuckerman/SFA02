@@ -50,6 +50,11 @@ const CompanyDetail = {
             <div class="row mt-3" style="font-size:13px;">
               <div class="col-md-4">
                 <div class="mb-2"><i class="bi bi-briefcase text-muted"></i> <strong>業種:</strong> {{ company.industry || '-' }}</div>
+                <div class="mb-2"><i class="bi bi-star text-muted"></i> <strong>Tier:</strong>
+                  <span v-if="company.tier" :class="'badge-tier tier-' + company.tier">{{ company.tier }}</span>
+                  <span v-else class="text-muted">-</span>
+                  <span class="text-muted" style="font-size:10px">（求人DB参照）</span>
+                </div>
                 <div class="mb-2"><i class="bi bi-telephone text-muted"></i> <strong>電話:</strong> {{ company.phone || '-' }}</div>
                 <div class="mb-2"><i class="bi bi-geo-alt text-muted"></i> <strong>住所:</strong> {{ company.address || '-' }}</div>
               </div>
@@ -193,6 +198,30 @@ const CompanyDetail = {
                       </tbody>
                     </table>
                   </div>
+                </div>
+              </div>
+            </div>
+
+              <!-- 部署別Sent数（求人DB参照・読み取り専用） -->
+              <div class="mt-4" v-if="deptSentCounts.length > 0">
+                <h6 style="font-size:14px; font-weight:600; margin-bottom:8px;">
+                  <i class="bi bi-send text-muted"></i> 部署別Sent数（直近90日・求人DB参照）
+                </h6>
+                <div class="data-table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>部署名</th>
+                        <th>Sent数（90日）</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="ds in deptSentCounts" :key="ds.department_id">
+                        <td>{{ ds.department_name }}</td>
+                        <td><strong>{{ ds.sent_count_90d }}</strong></td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
@@ -423,6 +452,7 @@ const CompanyDetail = {
       tasks: [],
       companyMembers: [],
       allCompanies: [],
+      deptSentCounts: [],
     };
   },
 
@@ -487,7 +517,7 @@ const CompanyDetail = {
       this.loading = true;
 
       // 全データを並列取得
-      const [company, contractData, departments, contacts, meetings, projects, jobs, tasks, allCompanies] = await Promise.all([
+      const [company, contractData, departments, contacts, meetings, projects, jobs, tasks, allCompanies, deptSentCounts] = await Promise.all([
         API.getCompanyById(this.companyId),
         API.getContractByCompany(this.companyId),
         API.getDepartmentsByCompany(this.companyId),
@@ -497,6 +527,7 @@ const CompanyDetail = {
         API.getJobsByCompany(this.companyId),
         API.getTasksByCompany(this.companyId),
         API.getCompanyList(),
+        API.getDeptSentCounts(this.companyId),
       ]);
 
       this.company = company;
@@ -509,6 +540,7 @@ const CompanyDetail = {
       this.tasks = await this.enrichTasks(tasks);
       this.companyMembers = this.getCompanyMemberList();
       this.allCompanies = allCompanies;
+      this.deptSentCounts = deptSentCounts;
 
       this.loading = false;
     },

@@ -96,4 +96,42 @@ const FilterUtils = {
     if (!amount && amount !== 0) return '-';
     return '¥' + Number(amount).toLocaleString();
   },
+
+  /**
+   * フィルター保存（localStorage）
+   */
+  saveFilter(screenKey, name, filters) {
+    const storageKey = 'sfa02_filters_' + screenKey;
+    const saved = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    saved.push({ name, filters: JSON.parse(JSON.stringify(filters)) });
+    localStorage.setItem(storageKey, JSON.stringify(saved));
+    return saved;
+  },
+
+  getSavedFilters(screenKey) {
+    const storageKey = 'sfa02_filters_' + screenKey;
+    return JSON.parse(localStorage.getItem(storageKey) || '[]');
+  },
+
+  deleteSavedFilter(screenKey, index) {
+    const storageKey = 'sfa02_filters_' + screenKey;
+    const saved = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    saved.splice(index, 1);
+    localStorage.setItem(storageKey, JSON.stringify(saved));
+    return saved;
+  },
+
+  /**
+   * カラム表示切替（localStorage）
+   */
+  saveColumnVisibility(screenKey, visibleColumns) {
+    const storageKey = 'sfa02_columns_' + screenKey;
+    localStorage.setItem(storageKey, JSON.stringify(visibleColumns));
+  },
+
+  getColumnVisibility(screenKey, defaultColumns) {
+    const storageKey = 'sfa02_columns_' + screenKey;
+    const saved = localStorage.getItem(storageKey);
+    return saved ? JSON.parse(saved) : [...defaultColumns];
+  },
 };

@@ -102,7 +102,7 @@ const Dashboard = {
                 <div class="summary-card">
                   <div class="label">パイプライン加重金額</div>
                   <div class="value" style="font-size:20px">{{ formatCurrency(pipelineWeighted) }}</div>
-                  <div class="sub">提案中案件の金額 × 確度の合計</div>
+                  <div class="sub">提案中案件の金額 x 確度の合計</div>
                 </div>
                 <div class="summary-card">
                   <div class="label">受注合計金額</div>
@@ -111,6 +111,14 @@ const Dashboard = {
                 <div class="summary-card">
                   <div class="label">失注件数</div>
                   <div class="value" style="font-size:20px; color:var(--color-danger)">{{ lostCount }}件</div>
+                </div>
+                <div class="summary-card">
+                  <div class="label">平均滞在期間（ファネル間）</div>
+                  <div class="value" style="font-size:16px">
+                    <span v-if="avgStageDuration">{{ avgStageDuration }}日</span>
+                    <span v-else class="text-muted" style="font-size:14px">-</span>
+                  </div>
+                  <div class="sub">ProjectStatusHistoryより算出</div>
                 </div>
               </div>
             </div>
@@ -233,6 +241,7 @@ const Dashboard = {
       companies: [],
       contractLines: [],
       departments: [],
+      statusHistory: [],
     };
   },
 
@@ -252,6 +261,13 @@ const Dashboard = {
 
       const contractedCount = this.contractLines.filter(cl => cl.status === '締結済').length;
       cards.push({ label: '契約締結数', value: contractedCount });
+
+      // 事業部トス数（FS）
+      const fsToss = this.periodMeetings.filter(m => {
+        const setter = this.members.find(x => x.id === m.setter_member_id);
+        return setter && setter.role === 'FS' && m.project_id;
+      });
+      cards.push({ label: '事業部トス数（FS）', value: fsToss.length, sub: '件' });
 
       const dslProposals = this.projects.filter(p =>
         p.business_type === 'DSL' && ['提案中', 'PoC', '本提案中', '受注'].includes(p.status)
@@ -333,6 +349,29 @@ const Dashboard = {
 
     lostCount() {
       return this.projects.filter(p => p.business_type === 'DSL' && p.status === '失注').length;
+    },
+
+    // 平均滞在期間（ProjectStatusHistoryより算出）
+    avgStageDuration() {
+      if (!this.statusHistory || this.statusHistory.length < 2) return null;
+      const projectMap = {};
+      this.statusHistory.forEach(h => {
+        if (!projectMap[h.project_id]) projectMap[h.project_id] = [];
+        projectMap[h.project_id].push(h);
+      });
+
+      let totalDays = 0;
+      let count = 0;
+      Object.values(projectMap).forEach(history => {
+        const sorted = [...history].sort((a, b) => new Date(a.changed_at) - new Date(b.changed_at));
+        for (let i = 1; i < sorted.length; i++) {
+          const days = Math.floor((new Date(sorted[i].changed_at) - new Date(sorted[i - 1].changed_at)) / (1000 * 60 * 60 * 24));
+          totalDays += days;
+          count++;
+        }
+      });
+
+      return count > 0 ? Math.round(totalDays / count) : null;
     },
 
     // === C-4: 企業エンゲージメント ===
@@ -458,7 +497,7 @@ const Dashboard = {
   methods: {
     async loadData() {
       this.loading = true;
-      const [tasks, meetings, projects, jobs, companies, contractLines, departments] = await Promise.all([
+      const [tasks, meetings, projects, jobs, companies, contractLines, departments, statusHistory] = await Promise.all([
         API.getTaskList(),
         API.getMeetingList(),
         API.getProjectList(),
@@ -466,6 +505,7 @@ const Dashboard = {
         API.getCompanyList(),
         API.getAllContractLines(),
         API.getAllDepartments(),
+        API.getAllProjectStatusHistory(),
       ]);
       this.tasks = tasks;
       this.meetings = meetings;
@@ -474,6 +514,7 @@ const Dashboard = {
       this.companies = companies;
       this.contractLines = contractLines;
       this.departments = departments;
+      this.statusHistory = statusHistory;
       this.loading = false;
     },
 

@@ -94,6 +94,13 @@ const API = (() => {
     // 全社サマリー
     getDashboardData: (period) => get('getDashboardData', { period }),
 
+    // 案件ステータス履歴
+    getProjectStatusHistory: (projectId) => get('getProjectStatusHistory', { projectId }),
+    getAllProjectStatusHistory: () => get('getAllProjectStatusHistory'),
+
+    // 部署別Sent数（求人DB参照・読み取り専用）
+    getDeptSentCounts: (companyId) => get('getDeptSentCounts', { companyId }),
+
     // モーダル用：全データ取得
     getAllContacts: () => get('getAllContacts'),
     getAllDepartments: () => get('getAllDepartments'),

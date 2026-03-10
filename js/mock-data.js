@@ -29,14 +29,14 @@ const MockData = (() => {
     { id: 'm5', name: '高橋健一', email: 'takahashi@example.com', role: 'ITSS', is_active: true },
   ];
 
-  // === 企業 ===
+  // === 企業 ===（tier: 求人DBより参照・読み取り専用ダミー値）
   const companies = [
-    { id: 'c1', name: '株式会社テックコープ', name_kana: 'テックコープ', industry: 'IT・通信', phone: '03-1234-5678', address: '東京都千代田区1-1-1', lead_source: 'テレアポ', website_url: 'https://example.com' },
-    { id: 'c2', name: '株式会社グローバルHR', name_kana: 'グローバルエイチアール', industry: '人材', phone: '03-2345-6789', address: '東京都港区2-2-2', lead_source: '紹介' },
-    { id: 'c3', name: '合同会社デジタルソリューションズ', name_kana: 'デジタルソリューションズ', industry: 'IT・通信', phone: '03-3456-7890', address: '東京都渋谷区3-3-3', lead_source: 'Web' },
-    { id: 'c4', name: '株式会社ファイナンスプラス', name_kana: 'ファイナンスプラス', industry: '金融・保険', phone: '03-4567-8901', address: '東京都中央区4-4-4', lead_source: '展示会' },
-    { id: 'c5', name: '株式会社メディカルケア', name_kana: 'メディカルケア', industry: '医療・福祉', phone: '03-5678-9012', address: '東京都新宿区5-5-5', lead_source: 'テレアポ' },
-    { id: 'c6', name: '株式会社ロジテック', name_kana: 'ロジテック', industry: '物流・運輸', phone: '03-6789-0123', address: '東京都品川区6-6-6', lead_source: 'Web' },
+    { id: 'c1', name: '株式会社テックコープ', name_kana: 'テックコープ', industry: 'IT・通信', phone: '03-1234-5678', address: '東京都千代田区1-1-1', lead_source: 'テレアポ', website_url: 'https://example.com', tier: 'A' },
+    { id: 'c2', name: '株式会社グローバルHR', name_kana: 'グローバルエイチアール', industry: '人材', phone: '03-2345-6789', address: '東京都港区2-2-2', lead_source: '紹介', tier: 'B' },
+    { id: 'c3', name: '合同会社デジタルソリューションズ', name_kana: 'デジタルソリューションズ', industry: 'IT・通信', phone: '03-3456-7890', address: '東京都渋谷区3-3-3', lead_source: 'Web', tier: 'A' },
+    { id: 'c4', name: '株式会社ファイナンスプラス', name_kana: 'ファイナンスプラス', industry: '金融・保険', phone: '03-4567-8901', address: '東京都中央区4-4-4', lead_source: '展示会', tier: 'C' },
+    { id: 'c5', name: '株式会社メディカルケア', name_kana: 'メディカルケア', industry: '医療・福祉', phone: '03-5678-9012', address: '東京都新宿区5-5-5', lead_source: 'テレアポ', tier: 'B' },
+    { id: 'c6', name: '株式会社ロジテック', name_kana: 'ロジテック', industry: '物流・運輸', phone: '03-6789-0123', address: '東京都品川区6-6-6', lead_source: 'Web', tier: 'C' },
   ];
 
   // === CompanyMember ===
@@ -76,14 +76,14 @@ const MockData = (() => {
     { id: 'cl10', contract_id: 'ct6', business_type: 'ITSS', status: '締結済', contracted_date: daysAgo(15) },
   ];
 
-  // === Department ===
+  // === Department ===（sent_count_90d: 求人DBより参照・読み取り専用ダミー値）
   const departments = [
-    { id: 'd1', company_id: 'c1', name: '情報システム部' },
-    { id: 'd2', company_id: 'c1', name: '人事部' },
-    { id: 'd3', company_id: 'c2', name: '営業部' },
-    { id: 'd4', company_id: 'c3', name: '開発部' },
-    { id: 'd5', company_id: 'c4', name: 'IT推進部' },
-    { id: 'd6', company_id: 'c5', name: '総務部' },
+    { id: 'd1', company_id: 'c1', name: '情報システム部', sent_count_90d: 12 },
+    { id: 'd2', company_id: 'c1', name: '人事部', sent_count_90d: 5 },
+    { id: 'd3', company_id: 'c2', name: '営業部', sent_count_90d: 8 },
+    { id: 'd4', company_id: 'c3', name: '開発部', sent_count_90d: 3 },
+    { id: 'd5', company_id: 'c4', name: 'IT推進部', sent_count_90d: 15 },
+    { id: 'd6', company_id: 'c5', name: '総務部', sent_count_90d: 2 },
   ];
 
   // === Contact ===
@@ -176,6 +176,14 @@ const MockData = (() => {
     { id: 't10', title: 'テックコープ IS架電', due_date: daysAgo(2), status: '完了', priority: null, action_type: '架電', assigned_member_id: 'm1', company_id: 'c1' },
     { id: 't11', title: 'ファイナンスプラス IS架電', due_date: daysAgo(3), status: '完了', priority: null, action_type: '架電', assigned_member_id: 'm1', company_id: 'c4' },
     { id: 't12', title: '新規リスト架電 10件', due_date: daysLater(0), status: '未着手', priority: '中', action_type: '架電', assigned_member_id: 'm1' },
+  ];
+
+  // === ProjectStatusHistory ===（ダミー）
+  const projectStatusHistory = [
+    { id: 'psh1', project_id: 'p1', from_status: '提案準備中', to_status: '提案中', changed_at: daysAgo(30), changed_by_member_id: 'm3' },
+    { id: 'psh2', project_id: 'p4', from_status: '提案準備中', to_status: '提案中', changed_at: daysAgo(45), changed_by_member_id: 'm3' },
+    { id: 'psh3', project_id: 'p4', from_status: '提案中', to_status: 'PoC', changed_at: daysAgo(14), changed_by_member_id: 'm3' },
+    { id: 'psh4', project_id: 'p6', from_status: null, to_status: '提案準備中', changed_at: daysAgo(10), changed_by_member_id: 'm3' },
   ];
 
   // === ハンドラー ===
@@ -433,6 +441,31 @@ const MockData = (() => {
           const company = contract ? companies.find(c => c.id === contract.company_id) : null;
           return { ...cl, company_id: contract ? contract.company_id : '', company_name: company ? company.name : '' };
         });
+
+      case 'getProjectStatusHistory':
+        return projectStatusHistory
+          .filter(h => h.project_id === params.projectId)
+          .map(h => {
+            const m = members.find(x => x.id === h.changed_by_member_id);
+            return { ...h, changed_by_name: m ? m.name : '-' };
+          })
+          .sort((a, b) => new Date(b.changed_at) - new Date(a.changed_at));
+
+      case 'getAllProjectStatusHistory':
+        return projectStatusHistory.map(h => {
+          const m = members.find(x => x.id === h.changed_by_member_id);
+          return { ...h, changed_by_name: m ? m.name : '-' };
+        });
+
+      case 'getDeptSentCounts':
+        return departments
+          .filter(d => params.companyId ? d.company_id === params.companyId : true)
+          .map(d => ({
+            department_id: d.id,
+            department_name: d.name,
+            company_id: d.company_id,
+            sent_count_90d: d.sent_count_90d || 0,
+          }));
 
       default:
         return { message: 'Mock: action not implemented: ' + action };
